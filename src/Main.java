@@ -2,160 +2,70 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        Library library = new Library();
         Scanner scanner = new Scanner(System.in);
+        int choice = -1;
 
-        // Parallel arrays to store up to 10 students
-        int maxStudents = 10;
-        int[] studentIDs = new int[maxStudents];
-        String[] fullNames = new String[maxStudents];
-        int[] ages = new int[maxStudents];
-        String[] courses = new String[maxStudents];
-        double[] grades = new double[maxStudents];
-        boolean[] enrolledStatus = new boolean[maxStudents];
+        System.out.println("Welcome to the Library Information System!");
 
-        int studentCount = 0; // Tracks how many students are added
-        int choice = 0;
+        while (choice != 0) {
+            System.out.println("\n=========================");
+            System.out.println("        MAIN MENU        ");
+            System.out.println("=========================");
+            System.out.println("1. Add a book");
+            System.out.println("2. List all books");
+            System.out.println("3. Borrow a book");
+            System.out.println("4. Return a book");
+            System.out.println("5. Search a book");
+            System.out.println("0. Exit");
+            System.out.print("Enter your option: ");
 
-        // Loop for the main menu
-        while (choice != 5) {
-            System.out.println("\n===== STUDENT INFORMATION SYSTEM =====");
-            System.out.println("[1] Add Student");
-            System.out.println("[2] View All Students");
-            System.out.println("[3] Search Student by ID");
-            System.out.println("[4] View Statistics");
-            System.out.println("[5] Exit");
-            System.out.print("Enter choice: ");
-
-            choice = scanner.nextInt();
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid execution format. Please enter a numerical option (0-5).");
+                continue;
+            }
 
             switch (choice) {
                 case 1:
-                    // Option 1: Add Student
-                    if (studentCount >= maxStudents) {
-                        System.out.println("Error: Student list is full!");
-                    } else {
-                        System.out.print("Enter Student ID: ");
-                        int id = scanner.nextInt();
-                        scanner.nextLine(); // Clear scanner buffer
-
-                        System.out.print("Enter Full Name: ");
-                        String name = scanner.nextLine();
-
-                        System.out.print("Enter Age: ");
-                        int age = scanner.nextInt();
-                        scanner.nextLine();
-
-                        System.out.print("Enter Course: ");
-                        String course = scanner.nextLine();
-
-                        System.out.print("Enter Grade: ");
-                        double grade = scanner.nextDouble();
-
-                        System.out.print("Is enrolled? (true/false): ");
-                        boolean status = scanner.nextBoolean();
-
-                        // Simple Input Validation
-                        if (age <= 0 || grade < 0 || grade > 100) {
-                            System.out.println("Invalid input! Age must be positive and grade must be 0-100. Student not added.");
-                        } else {
-                            // Store data in arrays
-                            studentIDs[studentCount] = id;
-                            fullNames[studentCount] = name;
-                            ages[studentCount] = age;
-                            courses[studentCount] = course;
-                            grades[studentCount] = grade;
-                            enrolledStatus[studentCount] = status;
-
-                            studentCount++;
-                            System.out.println("Student added successfully!");
-                        }
-                    }
+                    System.out.print("Enter book title: ");
+                    String title = scanner.nextLine();
+                    System.out.print("Enter book author: ");
+                    String author = scanner.nextLine();
+                    library.addBook(new Book(title, author));
                     break;
 
                 case 2:
-                    // Option 2: View All Students
-                    if (studentCount == 0) {
-                        System.out.println("No student records found.");
-                    } else {
-                        System.out.println("\n--- Student List ---");
-                        for (int i = 0; i < studentCount; i++) {
-                            // Find standing based on grade
-                            String standing;
-                            if (grades[i] >= 90) {
-                                standing = "Dean's Lister";
-                            } else if (grades[i] >= 75) {
-                                standing = "Passed";
-                            } else {
-                                standing = "Failed";
-                            }
-
-                            System.out.println("ID: " + studentIDs[i] + " | Name: " + fullNames[i] +
-                                    " | Age: " + ages[i] + " | Course: " + courses[i] +
-                                    " | Grade: " + grades[i] + " | Status: " + (enrolledStatus[i] ? "Enrolled" : "Not Enrolled") +
-                                    " | Standing: " + standing);
-                        }
-                    }
+                    library.listBooks();
                     break;
 
                 case 3:
-                    // Option 3: Search Student by ID
-                    if (studentCount == 0) {
-                        System.out.println("No records to search.");
-                    } else {
-                        System.out.print("Enter Student ID to search: ");
-                        int searchID = scanner.nextInt();
-                        boolean found = false;
-
-                        for (int i = 0; i < studentCount; i++) {
-                            if (studentIDs[i] == searchID) {
-                                System.out.println("Student Found: " + fullNames[i] + " (" + courses[i] + "), Grade: " + grades[i]);
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
-                            System.out.println("Student ID not found.");
-                        }
-                    }
+                    System.out.print("Enter the title of the book you want to borrow: ");
+                    String borrowTitle = scanner.nextLine();
+                    library.borrowBook(borrowTitle);
                     break;
 
                 case 4:
-                    // Option 4: View Statistics
-                    if (studentCount == 0) {
-                        System.out.println("No statistics available. Add students first.");
-                    } else {
-                        double sum = 0;
-                        double highestGrade = grades[0];
-                        String topStudent = fullNames[0];
-
-                        for (int i = 0; i < studentCount; i++) {
-                            sum += grades[i]; // Calculate total for average
-
-                            // Check for top student
-                            if (grades[i] > highestGrade) {
-                                highestGrade = grades[i];
-                                topStudent = fullNames[i];
-                            }
-                        }
-
-                        double average = sum / studentCount;
-                        System.out.println("\n--- Statistics ---");
-                        System.out.println("Total Students: " + studentCount);
-                        System.out.println("Average Grade: " + average);
-                        System.out.println("Top Student: " + topStudent + " (Grade: " + highestGrade + ")");
-                    }
+                    System.out.print("Enter the title of the book you are returning: ");
+                    String returnTitle = scanner.nextLine();
+                    library.returnBook(returnTitle);
                     break;
 
                 case 5:
-                    // Option 5: Exit
-                    System.out.println("Thank you for using the Student Information System. Goodbye!");
+                    System.out.print("Enter the title of the book to lookup: ");
+                    String searchTitle = scanner.nextLine();
+                    library.searchBook(searchTitle);
+                    break;
+
+                case 0:
+                    System.out.println("Exiting the program. Thank you for utilizing the Library System!");
                     break;
 
                 default:
-                    System.out.println("Invalid choice! Please select from 1 to 5.");
+                    System.out.println("Invalid choice selection. Out of range boundaries (0-5).");
             }
         }
-
         scanner.close();
     }
 }
