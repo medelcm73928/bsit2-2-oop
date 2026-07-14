@@ -2,70 +2,60 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Library library = new Library();
-        Scanner scanner = new Scanner(System.in);
-        int choice = -1;
+        GradeManager manager = new GradeManager();
+        Scanner sc = new Scanner(System.in);
+        boolean running = true;
 
-        System.out.println("Welcome to the Library Information System!");
+        System.out.println("=== Welcome to the CIT Grade Tracker Application ===");
 
-        while (choice != 0) {
-            System.out.println("\n=========================");
-            System.out.println("        MAIN MENU        ");
-            System.out.println("=========================");
-            System.out.println("1. Add a book");
-            System.out.println("2. List all books");
-            System.out.println("3. Borrow a book");
-            System.out.println("4. Return a book");
-            System.out.println("5. Search a book");
-            System.out.println("0. Exit");
-            System.out.print("Enter your option: ");
+        while (running) {
+            System.out.println("\n1. Add Student");
+            System.out.println("2. View All Students");
+            System.out.println("3. Calculate Class Average");
+            System.out.println("4. Exit");
+            System.out.print("Choose an option: ");
 
-            try {
-                choice = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid execution format. Please enter a numerical option (0-5).");
-                continue;
-            }
+            int choice = sc.nextInt();
 
             switch (choice) {
                 case 1:
-                    System.out.print("Enter book title: ");
-                    String title = scanner.nextLine();
-                    System.out.print("Enter book author: ");
-                    String author = scanner.nextLine();
-                    library.addBook(new Book(title, author));
+                    System.out.print("Enter name (one word): ");
+                    String name = sc.next();
+                    System.out.print("Enter grade: ");
+                    double grade = sc.nextDouble();
+
+                    manager.addStudent(name, grade);
+                    System.out.println("Student successfully recorded!");
                     break;
 
                 case 2:
-                    library.listBooks();
+                    if (manager.isEmpty()) {
+                        System.out.println("The roster is currently empty.");
+                    } else {
+                        System.out.println("\n--- Current Class Roster ---");
+                        for (Student s : manager.getRoster()) {
+                            System.out.printf("%s - %.1f (%s)%n", s.getName(), s.getGrade(), manager.letterFor(s.getGrade()));
+                        }
+                    }
                     break;
 
                 case 3:
-                    System.out.print("Enter the title of the book you want to borrow: ");
-                    String borrowTitle = scanner.nextLine();
-                    library.borrowBook(borrowTitle);
+                    if (manager.isEmpty()) {
+                        System.out.println("Cannot calculate average. The roster contains 0 students.");
+                    } else {
+                        System.out.printf("Class Average: %.2f%n", manager.calculateAverage());
+                    }
                     break;
 
                 case 4:
-                    System.out.print("Enter the title of the book you are returning: ");
-                    String returnTitle = scanner.nextLine();
-                    library.returnBook(returnTitle);
-                    break;
-
-                case 5:
-                    System.out.print("Enter the title of the book to lookup: ");
-                    String searchTitle = scanner.nextLine();
-                    library.searchBook(searchTitle);
-                    break;
-
-                case 0:
-                    System.out.println("Exiting the program. Thank you for utilizing the Library System!");
+                    System.out.println("Exiting program. Happy Coding!");
+                    running = false;
                     break;
 
                 default:
-                    System.out.println("Invalid choice selection. Out of range boundaries (0-5).");
+                    System.out.println("Invalid entry. Please select an option from 1 to 4.");
             }
         }
-        scanner.close();
+        sc.close();
     }
 }
