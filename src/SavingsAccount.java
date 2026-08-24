@@ -1,13 +1,13 @@
 public class SavingsAccount extends Account {
 
-    private static final double MAINTAINING_BALANCE = 500.00;
+    public static final double MAINTAINING_BALANCE = 500.0;
 
-    public SavingsAccount(
-            String accountNumber,
-            String ownerName,
-            double openingBalance) {
+    private double interestRate;
 
+    public SavingsAccount(String accountNumber, String ownerName,
+                          double openingBalance, double interestRate) {
         super(accountNumber, ownerName, openingBalance);
+        this.interestRate = interestRate;
     }
 
     @Override
@@ -16,22 +16,20 @@ public class SavingsAccount extends Account {
     }
 
     @Override
-    public void withdraw(double amount)
-            throws InsufficientFundsException {
-
+    public void withdraw(double amount) throws InsufficientFundsException {
         if (amount <= 0) {
-            throw new IllegalArgumentException(
-                    "Withdrawal amount must be greater than 0"
-            );
+            throw new IllegalArgumentException("Withdrawal amount must be greater than zero.");
         }
 
-        if (getBalance() - amount < MAINTAINING_BALANCE) {
-            double shortBy =
-                    MAINTAINING_BALANCE - (getBalance() - amount);
-
-            throw new InsufficientFundsException(shortBy);
+        double remaining = getBalance() - amount;
+        if (remaining < MAINTAINING_BALANCE) {
+            double shortfall = MAINTAINING_BALANCE - remaining;
+            throw new InsufficientFundsException(shortfall);
         }
+        super.withdraw(amount);
+    }
 
-        applyWithdrawal(amount);
+    public double monthlyInterest() {
+        return getBalance() * interestRate / 12;
     }
 }
